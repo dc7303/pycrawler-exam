@@ -41,12 +41,12 @@ time.sleep(3)
 login_page = chrome.page_source
 
 elm = chrome.find_element_by_id('login_field')
-elm.send_keys('')  # 깃허브 아이디
+elm.send_keys('깃허브 아이디')
 elm = chrome.find_element_by_id('password')
-elm.send_keys('')  # 깃허브 비밀번호
+elm.send_keys('깃허브 비밀번호')
 elm.send_keys(Keys.RETURN)
 
-time.sleep(10)
+time.sleep(5)
 
 # 페이지 이동
 url = 'https://github.com/dc7303/pycrawler-exam-dummy-data'
