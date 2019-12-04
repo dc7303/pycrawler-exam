@@ -1,10 +1,13 @@
 import sys
 import os
 import time
+import zipfile
+import glob
 from selenium.webdriver.common.keys import Keys
 
 from logger import setup_custom_logger
 from chromedriver import generate_chrome
+from xlsxhandler import get_dir_update_info
 
 logger = setup_custom_logger('main.py')
 logger.debug('Run crawler!!!!')
@@ -61,3 +64,25 @@ elm.click()
 elm = chrome.find_element_by_xpath('//*[@id="js-repo-pjax-container"]/div[2]/div/div[3]/details[2]/div/div/div[1]/div[3]/a[2]')
 elm.click()
 time.sleep(5)
+
+# ZIP 파일 존재여부 확인 후 압축 풀기
+repo_name = 'pycrawler-exam-dummy-data-master'
+zip_file_path = f'{DOWNLOAD_DIR}/{repo_name}.zip'
+if os.path.isfile(zip_file_path):
+    z = zipfile.ZipFile(zip_file_path)
+    z.extractall(DOWNLOAD_DIR)
+    z.close()
+    os.remove(zip_file_path)
+
+# 압축 해제한 파일 디렉토리 경로 선언
+before_dir_path = f'{DOWNLOAD_DIR}/{repo_name}/before'
+after_dir_path = f'{DOWNLOAD_DIR}/{repo_name}/after'
+
+# 파일 경로 리스트 조회
+before_xlsx_list = [f for f in glob.glob(f'{before_dir_path}/*.xlsx')]
+after_xlsx_list = [f for f in glob.glob(f'{after_dir_path}/*.xlsx')]
+
+# 파일 삭제, 추가 정보 비교 분석
+deleted_file_list, new_file_list = get_dir_update_info(before_xlsx_list, after_xlsx_list)
+
+# 파일 비교 분석 후 가져오기
