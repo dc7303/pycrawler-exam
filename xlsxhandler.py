@@ -50,43 +50,44 @@ def get_file_difference_info_list(current_xlsx_list: list, dir_path: str) -> lis
     """
     diff_info_list = []
     for xlsx_ in current_xlsx_list:
+        # 엑셀파일 읽기
         try:
-            # 엑셀파일 읽기
             current_xlsx_df = pd.read_excel(xlsx_)
             file_name = xlsx_.split('/')[-1]
 
             # 이전 버전 조회
-            old_xlsx_df = pd.read_excel(f'{dir_path}/{file_name}')
-
-            # 시트 데이터가 같은지 비교 후 같지 않다면 상세 비교
-            if not old_xlsx_df.equals(current_xlsx_df):
-                logger.debug(f'Diff file ==> {file_name}')
-                # 두 데이터 다른 부분 추출
-                df = pd.concat([old_xlsx_df, current_xlsx_df])
-                duplicates_df = df.drop_duplicates(keep=False)
-                logger.debug(f'Diff row ==> {duplicates_df}')
-
-                old_list = old_xlsx_df.values.tolist()
-                cur_list = current_xlsx_df.values.tolist()
-
-                # 변경 전 데이터, 변경 후 데이터 분류
-                changed_list = []
-                for r in duplicates_df.values.tolist():
-                    for old in old_list[1:]:
-                        if str(old) == str(r):
-                            changed_list.append(f'~{old}~')
-
-                    for cur in cur_list[1:]:
-                        if str(cur) == str(r):
-                            changed_list.append(f'{cur}')
-
-                # 변경된 정보를 핸들링할 객체 생성
-                logger.debug(f'chaged_list = {changed_list}')
-                info = FileDiffInfo(file_name, changed_list)
-                diff_info_list.append(info)
-
-        except Exception as e:
-            logger.error(e)
+            before_xlsx_df = pd.read_excel(f'{dir_path}/{file_name}')
+        except FileNotFoundError:
             continue
 
+        # 시트 데이터가 같은지 비교 후 같지 않다면 상세 비교
+        if not before_xlsx_df.equals(current_xlsx_df):
+            # 두 데이터 다른 부분 추출
+            df = pd.concat([before_xlsx_df, current_xlsx_df])
+            duplicates_df = df.drop_duplicates(keep=False)
+
+            before_list = [str(r) for r in before_xlsx_df.values.tolist()]
+            current_list = [str(r) for r in current_xlsx_df.values.tolist()]
+
+            # 변경 전 데이터, 변경 후 데이터 분류
+            changed_list = []
+            for row in duplicates_df.values.tolist():
+                row_str = str(row)
+                try:
+                    b_index = before_list.index(row_str)
+                    changed_list.append(f'~{before_list[b_index]}~')
+                except ValueError:
+                    pass
+
+                try:
+                    c_index = current_list.index(row_str)
+                    changed_list.append(current_list[c_index])
+                except ValueError:
+                    pass
+
+            # 변경된 정보를 핸들링할 객체 생성
+            info = FileDiffInfo(file_name, changed_list)
+            diff_info_list.append(info)
+
     return diff_info_list
+
