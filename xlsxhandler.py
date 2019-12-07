@@ -14,27 +14,27 @@ def _compare_with_each_other_file_info(compare_list: list, compare_target_list) 
     :param compare_target_list: 비교 대상 리스트
     :return: 다른 항목 리스트
     """
-    compare_file_name_list = [v.split('/')[-1] for v in compare_list]
-    target_file_name_list = [v.split('/')[-1] for v in compare_target_list]
     result_list = []
-    for name in compare_file_name_list:
-        if name not in target_file_name_list:
+    for name in compare_list:
+        if name not in compare_target_list:
             result_list.append(name)
 
     return result_list
 
 
-def get_dir_update_info(before_xlsx_list: list, after_xlsx_list) -> (list, list):
+def get_dir_update_info(before_xlsx_path_list: list, after_xlsx_path_list) -> (list, list):
     """
     이전 파일 리스트와 현재 파일리스트를 비교하여
     삭제된 파일과 추가된 파일을 파악하여 반환
 
-    :param before_xlsx_list: 이전 파일들
-    :param after_xlsx_list: 업데이트 후 파일들
+    :param before_xlsx_path_list: 이전 파일경로 리스트
+    :param after_xlsx_path_list: 업데이트 후 파일경로 리스트
     :return: 삭제 파일 리스트와 생성된 파일 리스트
     """
-    deleted_file_list = _compare_with_each_other_file_info(before_xlsx_list, after_xlsx_list)
-    new_file_list = _compare_with_each_other_file_info(after_xlsx_list, before_xlsx_list)
+    after_file_name_list = [after.split('/')[-1] for after in after_xlsx_path_list]
+    before_file_name_list = [before.split('/')[-1] for before in before_xlsx_path_list]
+    deleted_file_list = _compare_with_each_other_file_info(before_file_name_list, after_file_name_list)
+    new_file_list = _compare_with_each_other_file_info(after_file_name_list, before_file_name_list)
 
     return deleted_file_list, new_file_list
 
