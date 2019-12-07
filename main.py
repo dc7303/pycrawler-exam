@@ -9,7 +9,7 @@ from selenium.webdriver.common.keys import Keys
 
 from logger import setup_custom_logger
 from chromedriver import generate_chrome
-from xlsxhandler import get_dir_update_info, get_file_difference_info_list
+from xlsxhandler import get_dir_update_info, get_file_diff_info_list
 from slackhandler import Slack, gen_total_file_update_info_text, gen_diff_row_info_text
 
 logger = setup_custom_logger('main.py')
@@ -47,9 +47,9 @@ time.sleep(3)
 login_page = chrome.page_source
 
 elm = chrome.find_element_by_id('login_field')
-elm.send_keys('dc7303@gmail.com')
+elm.send_keys('깃허브 아이디')
 elm = chrome.find_element_by_id('password')
-elm.send_keys('dc127303!!')
+elm.send_keys('깃허브 비밀번호')
 elm.send_keys(Keys.RETURN)
 
 time.sleep(5)
@@ -94,12 +94,10 @@ after_xlsx_list = glob.glob(f'{after_dir_path}/*.xlsx')
 
 # 파일 삭제, 추가 정보 비교 분석
 deleted_file_list, new_file_list = get_dir_update_info(before_xlsx_list, after_xlsx_list)
-print(deleted_file_list)
-print(new_file_list)
+
 # 파일 비교 분석 후 가져오기
-file_diff_info_list = get_file_difference_info_list(after_xlsx_list, before_dir_path)
-print(file_diff_info_list)
-exit()
+file_diff_info_list = get_file_diff_info_list(after_xlsx_list, before_dir_path)
+
 # 슬랙 생성
 SLACK_TOKEN = '슬랙 토큰'
 SLACK_CHANNEL = '채널 이름'
