@@ -70,5 +70,3 @@ def gen_diff_row_info_text(file_diff_info_list: list):
             
 
 
-
-

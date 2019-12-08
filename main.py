@@ -101,7 +101,7 @@ file_diff_info_list = get_file_diff_info_list(after_xlsx_list, before_dir_path)
 # 슬랙 생성
 SLACK_TOKEN = '슬랙 토큰'
 SLACK_CHANNEL = '채널 이름'
-SLACK_SENDER_NAME = '전송자 이름'
+SLACK_SENDER_NAME = '보낸이 이름'
 slack = Slack(token=SLACK_TOKEN, channel=SLACK_CHANNEL, username=SLACK_SENDER_NAME)
 
 # 삭제 파일, 생성된 파일 리스트 관련 메세지 생성
@@ -118,6 +118,6 @@ else:
 
     if file_diff_info_text is not None:
         result_msg += f'{file_diff_info_text}\n\n\n'
-
 result_msg += '====================================================='
+
 slack.send_slack_msg(text=result_msg)
